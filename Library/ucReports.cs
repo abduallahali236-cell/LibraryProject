@@ -164,13 +164,17 @@ private void InitializeReportTypes()
         if (dgvReports.Rows.Count == 0)
             return;
 
-        ExcelExporter.Export(dgvReports);
+        bool datesOnly = (ReportType)cmbReportType.SelectedItem == ReportType.Borrowings;
+
+        ExcelExporter.Export(dgvReports, datesOnly);
     }
     private void btnExportPdf_Click(object sender, EventArgs e)
     {
         if (dgvReports.Rows.Count == 0)
             return;
 
-        PdfExporter.Export(dgvReports);
+        bool datesOnly = (ReportType)cmbReportType.SelectedItem == ReportType.Borrowings;
+
+        PdfExporter.Export(dgvReports, datesOnly);
     }
 }
