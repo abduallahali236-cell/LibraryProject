@@ -6,7 +6,7 @@ namespace Library.UI.Helpers;
 
 public static class ExcelExporter
 {
-    public static void Export(DataGridView grid)
+    public static void Export(DataGridView grid, bool datesOnly = false)
     {
         if (grid == null || grid.Rows.Count == 0)
         {
@@ -28,7 +28,7 @@ public static class ExcelExporter
 
         using XLWorkbook workbook = new();
 
-        DataTable table = ToDataTable(grid);
+        DataTable table = ToDataTable(grid, datesOnly);
 
         workbook.Worksheets.Add(table, "Report");
 
@@ -49,7 +49,7 @@ public static class ExcelExporter
             MessageBoxIcon.Information);
     }
 
-    private static DataTable ToDataTable(DataGridView grid)
+    private static DataTable ToDataTable(DataGridView grid, bool datesOnly)
     {
         DataTable table = new();
 
@@ -65,7 +65,20 @@ public static class ExcelExporter
 
             for (int i = 0; i < grid.Columns.Count; i++)
             {
-                dataRow[i] = row.Cells[i].Value ?? DBNull.Value;
+                var val = row.Cells[i].Value;
+                if (datesOnly)
+                {
+                    if (val is DateTime dt)
+                        dataRow[i] = dt.ToString("dd/MM/yyyy");
+                    else if (val is string s && DateTime.TryParse(s, out var parsed))
+                        dataRow[i] = parsed.ToString("dd/MM/yyyy");
+                    else
+                        dataRow[i] = val ?? DBNull.Value;
+                }
+                else
+                {
+                    dataRow[i] = val ?? DBNull.Value;
+                }
             }
 
             table.Rows.Add(dataRow);
